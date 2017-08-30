@@ -95,6 +95,7 @@ type getUploadURLResponse struct {
 type listBucketsResponse struct {
 	Buckets []*BucketInfo `json:"buckets"`
 }
+
 type fileRequest struct {
 	ID string `json:"fileId"`
 }
@@ -114,6 +115,12 @@ type File struct {
 	ContentSha1   string            `json:"contentSha1"`
 	ContentType   string            `json:"contentType"`
 	FileInfo      map[string]string `json:"fileInfo"`
+}
+
+// FileRange describes a range of bytes in a file by its 0-based start and end position (inclusive)
+type FileRange struct {
+	Start int64
+	End   int64
 }
 
 type listFilesRequest struct {

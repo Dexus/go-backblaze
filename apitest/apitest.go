@@ -43,6 +43,7 @@ func main() {
 		AccountID:      opts.AccountID,
 		ApplicationKey: opts.ApplicationKey,
 	})
+	b2.Debug = true
 	check(err)
 
 	b := testBucketCreate(b2)
@@ -50,6 +51,8 @@ func main() {
 	f, data := testFileUpload(b)
 
 	testFileDownload(b, f, data)
+
+	testFileRangeDownload(b, f, data)
 
 	testFileDelete(b, f)
 
@@ -104,6 +107,20 @@ func testFileDownload(b *backblaze.Bucket, f *backblaze.File, data []byte) {
 	}
 
 	log.Print("File downloaded")
+}
+
+func testFileRangeDownload(b *backblaze.Bucket, f *backblaze.File, data []byte) {
+	f, reader, err := b.DownloadFileRangeByName(f.Name, &backblaze.FileRange{Start: 100, End: 2000})
+	check(err)
+
+	body, err := ioutil.ReadAll(reader)
+	check(err)
+
+	if !bytes.Equal(body, data[100:2000+1]) {
+		log.Fatal("Downloaded file range does not match upload")
+	}
+
+	log.Print("File range downloaded")
 }
 
 func testFileDelete(b *backblaze.Bucket, f *backblaze.File) {
